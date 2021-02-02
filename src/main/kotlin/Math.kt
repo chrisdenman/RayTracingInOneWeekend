@@ -4,6 +4,8 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random.Default.nextDouble
 
+private const val TOLERANCE = 1E-8
+
 @Suppress("unused")
 data class Vec3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
 
@@ -25,7 +27,7 @@ data class Vec3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
 
     val magnitude: Double = sqrt(magnitudeSquared)
 
-    val isNearZero: Boolean = tolerable(x) && tolerable(y) && tolerable(z)
+    val isNearZero: Boolean = x.isNearZero && y.isNearZero && z.isNearZero
 
     fun scale(scalar: Vec3) = Vec3(
         scalar.x * x,
@@ -47,9 +49,6 @@ data class Vec3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
         get() = this / magnitude
 
     companion object {
-
-        private const val TOLERANCE = 1E-8
-
         val ONE = Vec3(1, 1, 1)
         val ZERO = Vec3(0, 0, 0)
 
@@ -101,8 +100,6 @@ data class Vec3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
             val sinSquaredThetaT = etai_over_etat * etai_over_etat * (1 - (cosThetaI * cosThetaI))
             return (etai_over_etat * i) + (etai_over_etat * cosThetaI - sqrt(1 - sinSquaredThetaT)) * n
         }
-
-        private fun tolerable(e: Double): Boolean = abs(e) < TOLERANCE
     }
 }
 
@@ -113,6 +110,7 @@ operator fun Double.times(v: Vec3) = v * this
 
 val Double.reciprocal get() = 1.0 / this
 val Double.cosOrSin get() = sqrt(1 - this * this)
+val Double.isNearZero get() = abs(this) < TOLERANCE
 
 fun Double.clamp(minInclusive: Double, maxInclusive: Double) = when {
     this < minInclusive -> minInclusive
