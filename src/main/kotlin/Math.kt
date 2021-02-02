@@ -61,13 +61,14 @@ data class Vec3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
 
         val randomInUnitDisc: Vec3
             get() {
-                 while (true) {
-                     Vec3(
-                         nextDouble(-1.0,1.0),
-                         nextDouble(-1.0,1.0),
-                         0.0).let { candidate ->
-                             if (candidate.magnitudeSquared < 1) return candidate
-                         }
+                while (true) {
+                    Vec3(
+                        nextDouble(-1.0, 1.0),
+                        nextDouble(-1.0, 1.0),
+                        0.0
+                    ).let { candidate ->
+                        if (candidate.magnitudeSquared < 1) return candidate
+                    }
                 }
             }
 

@@ -15,7 +15,7 @@ class Sphere(private val center: Point3, private val radius: Double, override va
         val halfB = oc dot ray.direction
         val c = oc.magnitudeSquared - (radius * radius)
         val discriminant = (halfB * halfB) - (a * c)
-        if (discriminant < 0 ) return null
+        if (discriminant < 0) return null
         val sqrtd = sqrt(discriminant)
         val root = ((-halfB - sqrtd) / a).let {
             when {

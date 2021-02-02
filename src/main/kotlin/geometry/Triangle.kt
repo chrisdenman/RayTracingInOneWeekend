@@ -13,7 +13,8 @@ class Triangle(
     private val vert0: Vec3,
     private val vert1: Vec3,
     private val vert2: Vec3,
-    override val material: Material) : Hittable {
+    override val material: Material
+) : Hittable {
 
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
         val edge1 = vert1 - vert0

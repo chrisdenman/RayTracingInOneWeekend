@@ -1,4 +1,6 @@
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_METHOD
@@ -74,11 +76,11 @@ internal class Vec3Spec {
     }
 
     @Test fun `Scaling a vector by a scalar`() {
-        (V0 * T) assertEquals Vec3(V0.x * T,V0.y * T, V0.z * T)
+        (V0 * T) assertEquals Vec3(V0.x * T, V0.y * T, V0.z * T)
     }
 
     @Test fun `Scaling a scalar by a vector`() {
-        (T * V0) assertEquals Vec3(V0.x * T,V0.y * T, V0.z * T)
+        (T * V0) assertEquals Vec3(V0.x * T, V0.y * T, V0.z * T)
     }
 
     @Test fun `Reciprocating a Double`() {
@@ -100,7 +102,7 @@ internal class Vec3Spec {
     }
 
     @Test fun `Dividing a vector by a scalar`() {
-        (V0 / T) tolerablyEquals Vec3(V0.x / T,V0.y / T, V0.z / T)
+        (V0 / T) tolerablyEquals Vec3(V0.x / T, V0.y / T, V0.z / T)
     }
 
     @Test fun `Dot product`() {
@@ -117,7 +119,7 @@ internal class Vec3Spec {
 
     @Test fun `Obtaining a unit vector`() {
         V0.unit.let {
-            it tolerablyEquals Vec3(-0.22770953509689237, 0.46257565558254427,-0.8568384506360207)
+            it tolerablyEquals Vec3(-0.22770953509689237, 0.46257565558254427, -0.8568384506360207)
             tolerable(it.magnitude - 1.0)
         }
     }

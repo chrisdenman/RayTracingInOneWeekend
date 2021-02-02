@@ -1,5 +1,4 @@
 import Vec3.Companion.ZERO
-import Vec3.Companion.boundedRandomComponents
 import geometry.Sphere
 import geometry.Triangle
 import kotlinx.coroutines.Dispatchers
@@ -7,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.runBlocking
-import materials.Dielectric
 import materials.Lambertian
 import materials.Metal
 import java.io.File
@@ -20,8 +18,8 @@ class Renderer(private val outputLocation: File) {
     private val camera: Camera
 
     init {
-        val lookFrom = Point3(13, 2, 3)
-        val lookAt = Point3(0, 0, 0)
+        val lookAt = Point3(0, 1, 0)
+        val lookFrom = Point3(-2, 5, 14)
         val vup = Vec3(0, 1, 0)
         val focusDistance = 10.0
         val aperture = 0.1
@@ -32,7 +30,8 @@ class Renderer(private val outputLocation: File) {
             fieldOfViewDegrees,
             aspectRatio,
             aperture,
-            focusDistance)
+            focusDistance
+        )
 
         world = makeFinalScene()
     }
@@ -47,7 +46,7 @@ class Renderer(private val outputLocation: File) {
                     write("$imageHeight\n")
                     write("255\n")
                     (imageHeight - 1).downTo(0).fold(Unit) { _, y ->
-                        println("${y + 1}/${imageHeight} scan lines remaining.")
+                        println("${y + 1}/$imageHeight scan lines remaining.")
                         val start = System.currentTimeMillis()
                         (0 until imageWidth).fold(Unit) { _, x ->
                             (0 until samplesPerPixel).map {
@@ -59,9 +58,12 @@ class Renderer(private val outputLocation: File) {
                                 }
                             }.let { jobs ->
                                 jobs.joinAll()
-                                writeColour(jobs.fold(ZERO) { acc, curr ->
-                                    acc + curr.getCompleted()
-                                }, samplesPerPixel)
+                                writeColour(
+                                    jobs.fold(ZERO) { acc, curr ->
+                                        acc + curr.getCompleted()
+                                    },
+                                    samplesPerPixel
+                                )
                             }
                         }
                         val end = System.currentTimeMillis()
@@ -76,7 +78,7 @@ class Renderer(private val outputLocation: File) {
         private const val aspectRatio: Double = 3.0 / 2.0
         private const val fieldOfViewDegrees: Double = 20.0
         private const val maxDepth = 50
-        private const val samplesPerPixel = 20
+        private const val samplesPerPixel = 100
         private const val imageWidth = 1000
         private const val imageHeight = (imageWidth / aspectRatio).toInt()
 
@@ -85,40 +87,44 @@ class Renderer(private val outputLocation: File) {
             val groundMaterial = Lambertian(Colour(0.5, 0.5, 0.5))
             hittables.add(Sphere(Point3(0, -1000, 0), 1000.0, groundMaterial))
 
-//            for (a in -11 until 11)  {
-//                for (b in -11 until 11) {
-//                    val chooseMat = nextDouble()
-//                    val center = Point3(a + 0.9 * nextDouble(), 0.2, b + 0.9 * nextDouble())
-//
-//                    if (((center - Point3(4.0, 0.2, 0.0)).magnitude) > 0.9 ) {
-//                        if (chooseMat < 0.8) {
-//                            hittables.add(
-//                                Sphere(
-//                                    center,
-//                                    0.2,
-//                                    Lambertian(Vec3.randomUnitComponents * Vec3.randomUnitComponents)
-//                                )
-//                            )
-//                        } else if (chooseMat < 0.95) {
-//                            hittables.add(Sphere(center, 0.2, Metal(boundedRandomComponents(0.5, 1.0), nextDouble(0.0, 0.5))))
-//                        } else {
-//                            hittables.add(Sphere(center, 0.2, Dielectric(1.5)))
-//                        }
-//                    }
-//                }
-//            }
-//
-//            hittables.add(Sphere(Point3(0, 1, 0), 1.0, Dielectric(1.5)))
-//            hittables.add(Sphere(Point3(-4, 1, 0), 1.0, Lambertian(Colour(0.4, 0.2, 0.1))))
+            for (a in -11 until 11) {
+                val chooseMat = nextDouble()
+                val center = Point3(a + 0.9, 0.2, 0 + 0.9)
+                hittables.add(
+                    Sphere(
+                        center,
+                        0.2,
+                        Lambertian(Vec3.randomUnitComponents * Vec3.randomUnitComponents)
+                    )
+                )
+                hittables.add(
+                    Sphere(
+                        center + Vec3(0.7, 0.0, -4.0),
+                        0.2,
+                        Lambertian(Vec3.randomUnitComponents * Vec3.randomUnitComponents)
+                    )
+                )
+            }
 
+            hittables.add(
+                Triangle(
+                    Point3(1, 0, 0),
+                    Point3(4, 0, 0),
+                    Point3(1, 3, 0),
+                    Lambertian(Colour(0.9, 0.2, 0.1))
+                )
+            )
 
-            hittables.add(Triangle(
-                Point3(1, 1, 2),
-                Point3(3, 2, 1),
-                Point3(2, 4, 0),
-                Lambertian(Colour(0.9, 0.2, 0.1))))
+            hittables.add(
+                Triangle(
+                    Point3(-3, 0, -2),
+                    Point3(3, 0, -2),
+                    Point3(-3, 4, -2),
+                    Metal(Colour(0.7, 0.9, 0.8), 0.2)
+                )
+            )
 
-            hittables.add(Sphere(Point3(4, 1, 0), 1.0, Metal(Colour(0.7, 0.6, 0.5), 0.0)))
+            hittables.add(Sphere(Point3(0, 1, 0), 1.0, Metal(Colour(0.7, 0.6, 0.5), 0.0)))
 
             return World(hittables)
         }

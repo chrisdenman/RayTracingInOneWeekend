@@ -34,7 +34,7 @@ class Dielectric(private val indexOfRefraction: Double) : Material {
             ((1 - refIndex) / (1 + refIndex)).let {
                 it * it
             }.let {
-                it + (1- it) * (1 - cosine).pow(5.0)
+                it + (1 - it) * (1 - cosine).pow(5.0)
             }
     }
 }
