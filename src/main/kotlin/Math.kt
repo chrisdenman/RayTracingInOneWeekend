@@ -4,7 +4,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random.Default.nextDouble
 
-private const val TOLERANCE = 1E-8
+const val TOLERANCE = 1E-8
 
 @Suppress("unused")
 data class Vec3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
@@ -112,6 +112,8 @@ operator fun Double.times(v: Vec3) = v * this
 val Double.reciprocal get() = 1.0 / this
 val Double.cosOrSin get() = sqrt(1 - this * this)
 val Double.isNearZero get() = abs(this) < TOLERANCE
+val Double.lessThanZero get() = this < 0.0
+val Double.greaterThanZero get() = this > 0.0
 
 fun Double.clamp(minInclusive: Double, maxInclusive: Double) = when {
     this < minInclusive -> minInclusive

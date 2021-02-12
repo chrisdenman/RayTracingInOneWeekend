@@ -7,7 +7,7 @@ data class Ray(val origin: Point3, val direction: Vec3) {
             depth <= 0 -> Colour.ZERO
             else -> {
                 world.hit(this, 0.001, Double.POSITIVE_INFINITY).let { worldHit ->
-                    worldHit?.hittable?.material?.scatter(this, worldHit.hit)?.let { scatterData ->
+                    worldHit?.hit?.material?.scatter(this, worldHit.hit)?.let { scatterData ->
                         when (scatterData.isScattered) {
                             true -> scatterData.ray.colour(world, depth - 1).scale(scatterData.attenuation)
                             else -> Colour.ZERO

@@ -1,6 +1,6 @@
 import Vec3.Companion.ZERO
+import geometry.NonCulledTriangle
 import geometry.Sphere
-import geometry.Triangle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -9,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import materials.Lambertian
 import materials.Metal
 import java.io.File
-import kotlin.random.Random.Default.nextDouble
 
 class Renderer(private val outputLocation: File) {
 
@@ -18,10 +17,10 @@ class Renderer(private val outputLocation: File) {
     private val camera: Camera
 
     init {
-        val lookAt = Point3(0, 1, 0)
-        val lookFrom = Point3(-2, 5, 14)
+        val lookAt = Point3(0, 0, 0)
+        val lookFrom = Point3(0, 2, 2)
         val vup = Vec3(0, 1, 0)
-        val focusDistance = 10.0
+        val focusDistance = 2.0
         val aperture = 0.1
         camera = Camera(
             lookFrom,
@@ -76,10 +75,10 @@ class Renderer(private val outputLocation: File) {
 
     companion object {
         private const val aspectRatio: Double = 3.0 / 2.0
-        private const val fieldOfViewDegrees: Double = 20.0
+        private const val fieldOfViewDegrees: Double = 40.0
         private const val maxDepth = 50
-        private const val samplesPerPixel = 100
-        private const val imageWidth = 1000
+        private const val samplesPerPixel = 200
+        private const val imageWidth = 100
         private const val imageHeight = (imageWidth / aspectRatio).toInt()
 
         fun makeFinalScene(): World {
@@ -87,44 +86,48 @@ class Renderer(private val outputLocation: File) {
             val groundMaterial = Lambertian(Colour(0.5, 0.5, 0.5))
             hittables.add(Sphere(Point3(0, -1000, 0), 1000.0, groundMaterial))
 
-            for (a in -11 until 11) {
-                val chooseMat = nextDouble()
-                val center = Point3(a + 0.9, 0.2, 0 + 0.9)
+            val axisColour = Colour(0.7, 0.9, 0.8)
+            val axisNegColour = Colour(0.4, 0.2, 0.4)
+            val axisMarkerMaterial = Metal(axisColour, 0.0)
+            val axisMarkerNegMaterial = Metal(axisNegColour, 0.0)
+            val axisMarkerRadius = 0.025
+            val spacing = 0.2
+            (-100..100).forEach { coordinate ->
                 hittables.add(
                     Sphere(
-                        center,
-                        0.2,
-                        Lambertian(Vec3.randomUnitComponents * Vec3.randomUnitComponents)
+                        Vec3(coordinate * spacing, 0.0, 0.0),
+                        axisMarkerRadius,
+                        if (coordinate < 0) axisMarkerNegMaterial else axisMarkerMaterial
                     )
                 )
+
                 hittables.add(
                     Sphere(
-                        center + Vec3(0.7, 0.0, -4.0),
-                        0.2,
-                        Lambertian(Vec3.randomUnitComponents * Vec3.randomUnitComponents)
+                        Vec3(0.0, coordinate.toDouble() * spacing, 0.0),
+                        axisMarkerRadius,
+                        if (coordinate < 0) axisMarkerNegMaterial else axisMarkerMaterial
+                    )
+                )
+
+                hittables.add(
+                    Sphere(
+                        Vec3(0.0, 0.0, coordinate.toDouble() * spacing),
+                        axisMarkerRadius,
+                        if (coordinate < 0) axisMarkerNegMaterial else axisMarkerMaterial
                     )
                 )
             }
 
+//            val triangleMaterial = Metal(Colour(0.7, 0.9, 0.8), 0.0)
+            val triangleMaterial = Lambertian(Colour(0.2, 0.9, 0.1))
             hittables.add(
-                Triangle(
-                    Point3(1, 0, 0),
-                    Point3(4, 0, 0),
-                    Point3(1, 3, 0),
-                    Lambertian(Colour(0.9, 0.2, 0.1))
+                NonCulledTriangle(
+                    Vec3(0.0, 0.0, 0.0),
+                    Vec3(1.0, 0.0, -1.0),
+                    Vec3(1.0, 1.0, -1.0),
+                    triangleMaterial
                 )
             )
-
-            hittables.add(
-                Triangle(
-                    Point3(-3, 0, -2),
-                    Point3(3, 0, -2),
-                    Point3(-3, 4, -2),
-                    Metal(Colour(0.7, 0.9, 0.8), 0.2)
-                )
-            )
-
-            hittables.add(Sphere(Point3(0, 1, 0), 1.0, Metal(Colour(0.7, 0.6, 0.5), 0.0)))
 
             return World(hittables)
         }

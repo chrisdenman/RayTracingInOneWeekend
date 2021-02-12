@@ -41,5 +41,6 @@ Rendered at: 2000px * 1333px, 500 samples/px, maximum depth of 50.
 
 ## References
 
+- [Ray Tracing in One Weekend — The Book Series](https://raytracing.github.io)
 - [Reflections and Refractions in Ray Tracing - Bram de Greve (2006)](https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf)
-- [Fast􏰀 Minimum Storage Ray􏰁Triangle Intersection - Tomas Mo􏰂ller, Ben Trumb ore](https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf)
+- [Fast Minimum Storage Ray Triangle Intersection - Tomas Moller, Ben Trumb ore](https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf)
